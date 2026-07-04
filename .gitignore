@@ -1,0 +1,17 @@
+# Backend
+backend/venv/
+backend/.env
+backend/__pycache__/
+backend/app/ml/cancer_detection/models/*.pkl
+backend/app/ml/cancer_detection/models/*.json
+backend/*.pyc
+backend/test_*.py
+backend/check_models.py
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# General
+.DS_Store
+*.log
