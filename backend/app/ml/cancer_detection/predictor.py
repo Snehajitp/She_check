@@ -7,7 +7,7 @@ import joblib
 import numpy as np
 from pathlib import Path
 from typing import Tuple
-import torch
+# import torch
 MODELS_DIR = Path(__file__).parent / "models"
 
 _params_model  = None
@@ -107,63 +107,63 @@ def predict_parameters(api_input: dict) -> Tuple[str, float]:
     return label, round(confidence, 4)
 
 
-def _load_image_model():
-    global _image_model, _img_transform
-    if _image_model is None:
-        try:
-            import torch
-            from torchvision import models, transforms
-        except ImportError:
-            raise ImportError("Install PyTorch: pip install torch torchvision Pillow")
+# def _load_image_model():
+#     global _image_model, _img_transform
+#     if _image_model is None:
+#         try:
+#             import torch
+#             from torchvision import models, transforms
+#         except ImportError:
+#             raise ImportError("Install PyTorch: pip install torch torchvision Pillow")
 
-        model_path = MODELS_DIR / "image_model.pth"
-        if not model_path.exists():
-            raise FileNotFoundError(
-                "Image model not found. Run:\n"
-                "  python -m app.ml.cancer_detection.train_image_model"
-            )
+#         model_path = MODELS_DIR / "image_model.pth"
+#         if not model_path.exists():
+#             raise FileNotFoundError(
+#                 "Image model not found. Run:\n"
+#                 "  python -m app.ml.cancer_detection.train_image_model"
+#             )
 
-        checkpoint  = torch.load(model_path, map_location="cpu", weights_only=False)
-        img_size    = checkpoint.get("img_size", 224)
+#         checkpoint  = torch.load(model_path, map_location="cpu", weights_only=False)
+#         img_size    = checkpoint.get("img_size", 224)
 
-        import torch.nn as nn
-        net = models.efficientnet_b0(weights=None)
-        in_features = net.classifier[1].in_features
-        net.classifier = nn.Sequential(
-            nn.Dropout(0.3),
-            nn.Linear(in_features, 128),
-            nn.ReLU(),
-            nn.Dropout(0.2),
-            nn.Linear(128, 2),
-        )
-        net.load_state_dict(checkpoint["model_state_dict"])
-        net.eval()
-        _image_model = net
+#         import torch.nn as nn
+#         net = models.efficientnet_b0(weights=None)
+#         in_features = net.classifier[1].in_features
+#         net.classifier = nn.Sequential(
+#             nn.Dropout(0.3),
+#             nn.Linear(in_features, 128),
+#             nn.ReLU(),
+#             nn.Dropout(0.2),
+#             nn.Linear(128, 2),
+#         )
+#         net.load_state_dict(checkpoint["model_state_dict"])
+#         net.eval()
+#         _image_model = net
 
-        _img_transform = transforms.Compose([
-            transforms.Resize((img_size, img_size)),
-            transforms.ToTensor(),
-            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
-        ])
-        print("[Cancer] Image model loaded.")
-    return _image_model, _img_transform
+#         _img_transform = transforms.Compose([
+#             transforms.Resize((img_size, img_size)),
+#             transforms.ToTensor(),
+#             transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
+#         ])
+#         print("[Cancer] Image model loaded.")
+#     return _image_model, _img_transform
 
 
-def predict_image(image_bytes: bytes) -> Tuple[str, float]:
-    # import torch
-    from PIL import Image
+# def predict_image(image_bytes: bytes) -> Tuple[str, float]:
+#     # import torch
+#     from PIL import Image
 
-    model, transform = _load_image_model()
-    img    = Image.open(io.BytesIO(image_bytes)).convert("RGB")
-    tensor = transform(img).unsqueeze(0)
+#     model, transform = _load_image_model()
+#     img    = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+#     tensor = transform(img).unsqueeze(0)
 
-    with torch.no_grad():
-        logits = model(tensor)
-        probs  = torch.softmax(logits, dim=1)[0]
+#     with torch.no_grad():
+#         logits = model(tensor)
+#         probs  = torch.softmax(logits, dim=1)[0]
 
-    pred_idx   = int(probs.argmax().item())
-    confidence = float(probs[pred_idx].item())
-    label      = LABELS[pred_idx]
+#     pred_idx   = int(probs.argmax().item())
+#     confidence = float(probs[pred_idx].item())
+#     label      = LABELS[pred_idx]
 
-    print(f"[Cancer] Image prediction: {label}, Confidence: {confidence:.4f}")
-    return label, round(confidence, 4)
+#     print(f"[Cancer] Image prediction: {label}, Confidence: {confidence:.4f}")
+#     return label, round(confidence, 4)
