@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const api = axios.create({ baseURL: 'http://localhost:8000/api' })
+const api = axios.create({ baseURL: 'https://she-check.onrender.com' })
 
 api.interceptors.request.use(cfg => {
   const token = localStorage.getItem('token')
