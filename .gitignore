@@ -2,9 +2,8 @@
 backend/venv/
 backend/.env
 backend/__pycache__/
-backend/app/ml/cancer_detection/models/*.pkl
-backend/app/ml/cancer_detection/models/*.json
-backend/*.pyc
+backend/**/__pycache__/
+backend/app/ml/cancer_detection/models/
 backend/test_*.py
 backend/check_models.py
 
@@ -15,3 +14,4 @@ frontend/dist/
 # General
 .DS_Store
 *.log
+*.pyc
